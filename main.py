@@ -31,6 +31,8 @@ class Game:
         # says location is the game folder
         game_folder = path.dirname(__file__)
         # will put map data in this empty list
+        img_folder = path.join(game_folder, 'images')
+        self.player_img = pg.image.load(path.join(img_folder, 'Autobot Symbol.png')).convert_alpha()
         self.map_data = []
         '''
         The with statement is a context manager in Python. 
@@ -42,10 +44,12 @@ class Game:
             for line in f:
                 print(line)
                 self.map_data.append(line)
+                print(self.map_data)
         # method for creating a new game
     def new(self):
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.coins = pg.sprite.Group()
         self.potions = pg.sprite.Group()
         #self.player = Player(self, 10, 10)
         #self.all_sprites.add(self.player)
@@ -59,10 +63,12 @@ class Game:
                 if tile == '1':
                     print("a wall at", row, col)
                     Wall(self, col, row)
-                if tile == "p":
+                if tile == 'P':
                     self.player = Player(self, col, row)
-                if tile == 'z':
-                    self.potions = Potions(self, col, row)
+                if tile == 'o':
+                    Potions(self, col, row)
+                if tile == 'C':
+                    Coin(self, col, row)
         
 
 
@@ -92,10 +98,20 @@ class Game:
             pg.draw.line(self.screen, LIGHTGREY, (x, 0), (x, HEIGHT))
         for y in range(0, HEIGHT, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
+
+    def draw_text(self, surface, text, size, color, x, y):
+        font_name = pg.font.match_font('arial')
+        font = pg.font.Font(font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.topleft = (x*TILESIZE,y*TILESIZE)
+        surface.blit(text_surface, text_rect)
+
     def draw(self):
         self.screen.fill(BGCOLOR)
         self.draw_grid()
         self.all_sprites.draw(self.screen)
+        self.draw_text(self.screen, str(self.player.moneybag), 64, WHITE, 1, 1)
         pg.display.flip()
         
     def events(self):
