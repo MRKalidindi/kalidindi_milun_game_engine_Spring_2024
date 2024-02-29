@@ -68,8 +68,7 @@ class Game:
                 if tile == 'o':
                     Potions(self, col, row)
                 if tile == 'C':
-                    Coin(self, col, row)
-        
+                    Coin(self, col, row)        
 
 
 #run method - responsible for running

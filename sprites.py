@@ -33,15 +33,6 @@ class Player(pg.sprite.Sprite):
             self.vy = -self.speed
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vy = self.speed
-    
-    def collide_with_group(self, group, kill):
-        hits = pg.sprite.spritecollide(self, group, kill)
-        if hits:
-            if str(hits[0].__class__.__name__) == "Coin":
-                self.moneybag += 1
-            if str(hits[0].__class__.__name__) == "Potion":
-                self.vx += 200
-                self.vy += 200
 
     def collide_with_walls(self, dir):
         if dir == 'x':
@@ -62,11 +53,14 @@ class Player(pg.sprite.Sprite):
                     self.y = hits[0].rect.bottom
                 self.vy = 0
                 self.rect.y = self.y
-    def collide_with_speedpotion(self):
-        hits = pg.sprite.spritecollide(self, self.game.speedpotion, False)
+    
+    def collide_with_group(self, group, kill):
+        hits = pg.sprite.spritecollide(self, group, kill)
         if hits:
-            #increase speed
-            self.speed + 200
+            if str(hits[0].__class__.__name__) == "Coin":
+                self.moneybag += 1
+            if str(hits[0].__class__.__name__) == "Potion":
+                self.speed += 2000
             
 
 
@@ -91,6 +85,7 @@ class Player(pg.sprite.Sprite):
         # self.rect.x = self.x * TILESIZE
         # self.rect.y = self.y * TILESIZE
         self.collide_with_group(self.game.coins, True)
+        self.collide_with_group(self.game.potions, True)
 
         # coin_hits = pg.sprite.spritecollide(self.game.coins, True)
         # if coin_hits:
@@ -149,3 +144,4 @@ class Coin(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
+        
