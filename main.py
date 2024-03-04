@@ -1,5 +1,17 @@
 # This file was created by: Milun Kalidindi
 
+
+'''
+Game design truths:goals, rules, feedbaack, freedom, verb, sentence
+
+Bosses
+Character with lasers and sword
+levels (different school with different maps)
+map that moves with character
+
+
+'''
+
 # importing libraries
 import pygame as pg 
 from settings import *
