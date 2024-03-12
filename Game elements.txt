@@ -1,0 +1,12 @@
+Game Features:
+
+Map that follows character
+hitpoint with healthbar
+# can shoot lasers at enemies (mob)
+# phase potion
+health potions
+# game over / menu / start page
+# enemies (multiple classes: boss, regular enemies, etc.)
+resources, tools, shopkeeper, inventory
+# 2 players (wasd + ^<>)
+

@@ -25,6 +25,30 @@ from os import path
 
 
 # initialize class
+# cooldown class
+# class Cooldown():
+#     # sets all properties to zero when instantiated...
+#     def __init__(self):
+#         self.current_time = 0
+#         self.event_time = 0
+#         self.delta = 0
+#         # ticking ensures the timer is counting...
+#     # must use ticking to count up or down
+#     def ticking(self):
+#         self.current_time = float((pg.time.get_ticks())/1000)
+#         self.delta = self.current_time - self.event_time
+#     # resets event time to zero - cooldown reset
+#     def countdown(self, x):
+#         x = x - self.delta
+#         if x != None:
+#             return x
+#     def event_reset(self):
+#         self.event_time = floor((pg.time.get_ticks())/1000)
+#     # sets current time
+#     def timer(self):
+#         self.current_time = floor((pg.time.get_ticks())/1000)
+
+# Game Class
 class Game:
     # method that defines function: __init__ 
     def __init__(self):
@@ -56,13 +80,17 @@ class Game:
             for line in f:
                 print(line)
                 self.map_data.append(line)
-                print(self.map_data)
+
         # method for creating a new game
     def new(self):
+        # create timer
+        # self.test_timer = Cooldown()
+        # print("create new game...")
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.coins = pg.sprite.Group()
         self.potions = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
         #self.player = Player(self, 10, 10)
         #self.all_sprites.add(self.player)
         #for x in range (10, 20):
@@ -80,7 +108,11 @@ class Game:
                 if tile == 'o':
                     Potions(self, col, row)
                 if tile == 'C':
-                    Coin(self, col, row)        
+                    Coin(self, col, row) 
+                if tile == 'M':
+                    Mob(self, col, row)
+                if tile == 'M':
+                    Mob2(self, col, row)
 
 
 #run method - responsible for running
@@ -102,7 +134,8 @@ class Game:
     def input(self): 
          pass
     def update(self):
-         self.all_sprites.update()  
+        #  self.test_timer.ticking()
+         self.all_sprites.update() 
     # draws the grid on the screen
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
