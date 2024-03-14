@@ -91,6 +91,7 @@ class Game:
         self.coins = pg.sprite.Group()
         self.potions = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
+        self.mobs2 = pg.sprite.Group()
         #self.player = Player(self, 10, 10)
         #self.all_sprites.add(self.player)
         #for x in range (10, 20):
@@ -111,7 +112,7 @@ class Game:
                     Coin(self, col, row) 
                 if tile == 'M':
                     Mob(self, col, row)
-                if tile == '2':
+                if tile == 'f':
                     Mob2(self, col, row)
 
 
@@ -126,6 +127,23 @@ class Game:
             self.update()
             # this is output
             self.draw()
+            
+    def show_start_screen(self):
+        self.screen.fill(BGCOLOR)
+        self.draw_text(self.screen, "This is the start screen", 24, WHITE, WIDTH/2 - 32, 2)
+        pg.display.flip()
+        self.wait_for_key()
+
+    def wait_for_key(self):
+        waiting = True
+        while waiting:
+            self.clock.tick(FPS)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.quit()
+                if event.type == pg.KEYUP:
+                    waiting = False
 
     def quit(self):
         pg.quit()
@@ -186,8 +204,7 @@ class Game:
 
 ############################### Instantiate Game....##################################
 g = Game()
-# g.show_go_screen()
+g.show_go_screen()
 while True:
     g.new()
     g.run()
-    # g.show_go_screen()
