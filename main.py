@@ -2,10 +2,17 @@
 
 
 '''
+Sources:
+kids can code: https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2001 
+
+
 Game design truths:goals, rules, feedbaack, freedom, verb, sentence
 
 Bosses
-Character with lasers and sword
+smoother enemies
+Character with lasers
+sword
+allow for pausing
 levels (different school with different maps)
 map that moves with character
 
@@ -60,9 +67,10 @@ class Game:
         # Clock(): class that tracks time using ticks
         self.clock = pg.time.Clock()
         pg.key.set_repeat(500, 100)
-        self.running = True
         # later on we'll store game info here
         self.load_data()
+        self.running = True
+        self.paused = False
     def load_data(self): 
         # says location is the game folder
         game_folder = path.dirname(__file__)
@@ -92,6 +100,9 @@ class Game:
         self.potions = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.mobs2 = pg.sprite.Group()
+        for i in range (0,1):
+            Coin(self, randint(0,32), randint(0,24)) 
+
         #self.player = Player(self, 10, 10)
         #self.all_sprites.add(self.player)
         #for x in range (10, 20):
@@ -108,14 +119,14 @@ class Game:
                     self.player = Player(self, col, row)
                 if tile == 'o':
                     Potions(self, col, row)
-                if tile == 'C':
-                    Coin(self, col, row) 
+                # if tile == 'C':
+                #     Coin(self, col, row) 
                 if tile == 'M':
                     Mob(self, col, row)
                 if tile == 'f':
                     Mob2(self, col, row)
-
-
+    # call the function
+        self.run()
 #run method - responsible for running
     def run(self):
         self.playing = True
@@ -127,23 +138,7 @@ class Game:
             self.update()
             # this is output
             self.draw()
-            
-    def show_start_screen(self):
-        self.screen.fill(BGCOLOR)
-        self.draw_text(self.screen, "This is the start screen", 24, WHITE, WIDTH/2 - 32, 2)
-        pg.display.flip()
-        self.wait_for_key()
 
-    def wait_for_key(self):
-        waiting = True
-        while waiting:
-            self.clock.tick(FPS)
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    waiting = False
-                    self.quit()
-                if event.type == pg.KEYUP:
-                    waiting = False
 
     def quit(self):
         pg.quit()
@@ -152,8 +147,13 @@ class Game:
     def input(self): 
          pass
     def update(self):
-        #  self.test_timer.ticking()
-         self.all_sprites.update() 
+        if not self.paused:
+            # wws
+            self.all_sprites.update()
+            if self.player.hitpoints < 1:
+                self.playing = False
+            # if self.player.moneybag > 2:
+                # self.change_level(LEVEL2)
     # draws the grid on the screen
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -177,34 +177,63 @@ class Game:
         pg.display.flip()
         
     def events(self):
-        #
+        for event in pg.event.get():
+            # when you hit the red x the window closes the game ends
+            if event.type == pg.QUIT:
+                self.quit()
+                print("The game has ended")
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_p:
+                    if not self.paused:
+                        self.paused = True
+                    else:
+                        self.paused = False
+            # gets inputs from the key arrows and tells it what to do (move)
+            # if event.type == pg.KEYDOWN:
+            #     if event.key == pg.K_a:
+            #         self.player.move(dx=-1)
+            # if event.type == pg.KEYDOWN:
+            #     if event.key == pg.K_d:
+            #         self.player.move(dx=1)
+            # if event.type == pg.KEYDOWN:
+            #     if event.key == pg.K_w:
+            #         self.player.move(dy=-1)
+            # if event.type == pg.KEYDOWN:
+            #     if event.key == pg.K_s:
+            #         self.player.move(dy=1)
+    
+    def wait_for_key(self):
+        waiting = True
+        while waiting:
+            self.clock.tick(FPS)
             for event in pg.event.get():
-                # when you hit the red x the window closes the game ends
                 if event.type == pg.QUIT:
+                    waiting = False
                     self.quit()
-                    print("The game has ended")
-                # gets inputs from the key arrows and tells it what to do (move)
-                # if event.type == pg.KEYDOWN:
-                #     if event.key == pg.K_a:
-                #         self.player.move(dx=-1)
-                # if event.type == pg.KEYDOWN:
-                #     if event.key == pg.K_d:
-                #         self.player.move(dx=1)
-                # if event.type == pg.KEYDOWN:
-                #     if event.key == pg.K_w:
-                #         self.player.move(dy=-1)
-                # if event.type == pg.KEYDOWN:
-                #     if event.key == pg.K_s:
-                #         self.player.move(dy=1)
+                if event.type == pg.KEYUP:
+                    waiting = False
 
     def show_start_screen(self):
-        pass 
+        self.screen.fill(BGCOLOR)
+        self.draw_text(self.screen, "This is the start screen - press any key to play", 24, WHITE, WIDTH/2, HEIGHT/2)
+        pg.display.flip()
+        self.wait_for_key
+
     def show_go_screen(self):
-        pass   
+        if not self.running:
+            return
+        self.screen.fill(BGCOLOR)
+        self.draw_text(self.screen, "Press any key to play", 24, WHITE, WIDTH/2, HEIGHT/2)
+        pg.display.flip()
+        self.wait_for_key() 
+    
 
 ############################### Instantiate Game....##################################
 g = Game()
+
 g.show_go_screen()
 while True:
     g.new()
-    g.run()
+    # g.run()
+    g.show_start_screen()
+

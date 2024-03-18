@@ -5,8 +5,6 @@ from settings import *
 
 vec =pg.math.Vector2
 
-vec =pg.math.Vector2
-
 def collide_with_walls(sprite, group, dir):
     if dir == 'x':
         hits = pg.sprite.spritecollide(sprite, group, False)
@@ -47,6 +45,8 @@ class Player(pg.sprite.Sprite):
         self.status = ""
         self.hitpoints = 100
         self.pos = vec(0,0)
+        self.dir = vec(0,0)
+        self.material = True
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
@@ -174,6 +174,8 @@ class Coin(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
+    def coin_spawn():
+        pass
         
 class Mob(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -192,7 +194,7 @@ class Mob(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.rot = 0
         # added
-        self.speed = 150
+        self.speed = 200
         # self.health = MOB_HEALTH
 
     def update(self):
