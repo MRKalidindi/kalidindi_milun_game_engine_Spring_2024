@@ -2,6 +2,7 @@
 # Appreciation to Chris Bradfield
 import pygame as pg
 from settings import *
+from random import randint
 
 vec =pg.math.Vector2
 
@@ -87,6 +88,7 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits:
             if str(hits[0].__class__.__name__) == "Coin":
+                Coin(self.game, randint(0,32), randint(0,24))
                 self.moneybag += 1
             if str(hits[0].__class__.__name__) == "Potions":
                 print(hits[0].__class__.__name__)
@@ -155,7 +157,7 @@ class Potions(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(RED)
+        self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -174,9 +176,11 @@ class Coin(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
-    def coin_spawn():
-        pass
-        
+    def move(self,x,y):
+        self.x = x
+        self.y = y
+
+
 class Mob(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.mobs
