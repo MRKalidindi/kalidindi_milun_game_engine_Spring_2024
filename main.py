@@ -102,7 +102,7 @@ class Game:
         self.mobs2 = pg.sprite.Group()
         self.health = pg.sprite.Group()
         for i in range (0,1):
-            Coin(self, randint(0,32), randint(0,24)) 
+            Coin(self, randint(0,30), randint(0,22)) 
 
         #self.player = Player(self, 10, 10)
         #self.all_sprites.add(self.player)

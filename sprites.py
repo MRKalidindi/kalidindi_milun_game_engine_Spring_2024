@@ -88,13 +88,14 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits:
             if str(hits[0].__class__.__name__) == "Coin":
-                Coin(self.game, randint(0,32), randint(0,24))
+                Coin(self.game, randint(0,30), randint(0,22))
                 self.moneybag += 1
             if str(hits[0].__class__.__name__) == "Potions":
                 print(hits[0].__class__.__name__)
                 self.speed += 100
-            if str(hits[0].__class__.__name__) == "Mob":
+            if str(hits[0].__class__.__name__) == "Mob" or str(hits[0].__class__.__name__) == "Mob2":
                 print(hits[0].__class__.__name__)
+                self.game.new()
                 print("Collided with mob")
                 self.hitpoints -= 1
             if str(hits[0].__class__.__name__) == "Health":
