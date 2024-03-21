@@ -204,7 +204,7 @@ class Mob(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.rot = 0
         # added
-        self.speed = 200
+        self.speed = 300
         # self.health = MOB_HEALTH
 
     def update(self):
@@ -231,7 +231,7 @@ class Mob2(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         # self.image = game.mob_img
-        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = pg.Surface((2 * TILESIZE, 2 * TILESIZE))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
         # self.hit_rect = MOB_HIT_RECT.copy()

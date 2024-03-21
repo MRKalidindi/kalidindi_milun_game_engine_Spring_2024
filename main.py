@@ -218,7 +218,7 @@ class Game:
 
     def show_start_screen(self):
         self.screen.fill(BGCOLOR)
-        self.draw_text(self.screen, "This is the start screen - press any key to play", 24, WHITE, WIDTH/2, HEIGHT/2)
+        self.draw_text(self.screen, "This is the start screen - press any key to play", 150, WHITE, WIDTH/2, HEIGHT/2)
         pg.display.flip()
         self.wait_for_key
 
@@ -226,7 +226,7 @@ class Game:
         if not self.running:
             return
         self.screen.fill(BGCOLOR)
-        self.draw_text(self.screen, "Press any key to play", 24, WHITE, WIDTH/2, HEIGHT/2)
+        self.draw_text(self.screen, "Press any key to play", 150, WHITE, WIDTH/2, HEIGHT/2)
         pg.display.flip()
         self.wait_for_key() 
     
