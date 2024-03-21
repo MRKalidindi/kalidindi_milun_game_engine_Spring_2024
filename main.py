@@ -100,6 +100,7 @@ class Game:
         self.potions = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.mobs2 = pg.sprite.Group()
+        self.health = pg.sprite.Group()
         for i in range (0,1):
             Coin(self, randint(0,32), randint(0,24)) 
 
@@ -125,6 +126,8 @@ class Game:
                     Mob(self, col, row)
                 if tile == 'f':
                     Mob2(self, col, row)
+                if tile == 'h':
+                    Health(self, col, row)
     # call the function
         self.run()
 #run method - responsible for running

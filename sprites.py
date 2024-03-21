@@ -97,6 +97,11 @@ class Player(pg.sprite.Sprite):
                 print(hits[0].__class__.__name__)
                 print("Collided with mob")
                 self.hitpoints -= 1
+            if str(hits[0].__class__.__name__) == "Health":
+                print(hits[0].__class__.__name__)
+                print("Collided with Health Potion")
+                self.hitpoints += 1
+
                 # if self.status == "Invincible":
                 #     print("you can't hurt me")
             
@@ -128,6 +133,7 @@ class Player(pg.sprite.Sprite):
         # if not self.cooling:
         self.collide_with_group(self.game.potions, True)
         self.collide_with_group(self.game.mobs, False)
+        self.collide_with_group(self.game.health, True)
         
         # coin_hits = pg.sprite.spritecollide(self.game.coins, True)
         # if coin_hits:
@@ -157,7 +163,7 @@ class Potions(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(GREEN)
+        self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -255,3 +261,16 @@ class Mob2(pg.sprite.Sprite):
         # self.rect.center = self.hit_rect.center
         # if self.health <= 0:
         #     self.kill()
+
+class Health(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.health
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(GREEN)
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
