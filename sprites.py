@@ -3,8 +3,12 @@
 import pygame as pg
 from settings import *
 from random import randint
+from utils import *
+from os import path
 
 vec =pg.math.Vector2
+game_folder = path.dirname(__file__)
+img_folder = path.join(game_folder, 'images')
 
 def collide_with_walls(sprite, group, dir):
     if dir == 'x':
@@ -36,10 +40,12 @@ class Player(pg.sprite.Sprite):
         # self.groups = game.all_sprites
         # self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image = game.player_img
+        self.spritesheet = Spritesheet(path.join(img_folder, 'Animated Sprite Sheet.png'))
         # self.image.fill(GREEN)
+        self.image = self.standing_frames[0]
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
-        self.x = x * TILESIZE
+        self.x = x * TILESIZE 
         self.y = y * TILESIZE
         self.speed = 300
         self.moneybag = 0
@@ -47,6 +53,8 @@ class Player(pg.sprite.Sprite):
         self.hitpoints = 100
         self.pos = vec(0,0)
         self.dir = vec(0,0)
+        self.current_frame = 0
+        self.last_update = 0
         self.material = True
 
     def get_keys(self):
@@ -102,9 +110,30 @@ class Player(pg.sprite.Sprite):
                 print(hits[0].__class__.__name__)
                 print("Collided with Health Potion")
                 self.hitpoints += 1
+            if str(hits[0].__class__.__name__) == "Bush":
+                print(hits[0].__class__.__name__)
+                print("collided with bush")
 
                 # if self.status == "Invincible":
                 #     print("you can't hurt me")
+    def load_images(self):
+        self.running_frames = [self.spritesheet.get_image(0,32, 32, 64), 
+                                self.spritesheet.get_image(32,32, 64, 64),
+                                self.spritesheet.get_image(64,32, 96,64),
+                                self.spritesheet.get_image(32,32, 64, 64)]
+        self.standing_frames = [self.spritesheet.get_image(0,0,32,0)]
+
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if now - self.last_update > 350:
+            self.last_update = now
+            self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
+            bottom = self.rect.bottom
+            self.image = self.standing_frames[self.current_frame]
+            self.rect = self.image.get_rect()
+            self.rect.bottom = bottom
+
             
 
 
@@ -119,6 +148,7 @@ class Player(pg.sprite.Sprite):
     def update(self):
         #self.rect.x = self.x
         #self.rect.y = self.y
+        self.animate()
         self.get_keys()
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
@@ -171,6 +201,7 @@ class Potions(pg.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
+# coin class
 class Coin(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.coins
@@ -187,26 +218,24 @@ class Coin(pg.sprite.Sprite):
         self.x = x
         self.y = y
 
-
+# triangular mob class
 class Mob(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.mobs
-        pg.sprite.Sprite.__init__(self, self.groups)
+        super().__init__(game.all_sprites, game.mobs)
         self.game = game
-        # self.image = game.mob_img
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(ORANGE)
+        self.image = self.create_triangular_image()
         self.rect = self.image.get_rect()
-        # self.hit_rect = MOB_HIT_RECT.copy()
-        # self.hit_rect.center = self.rect.center
         self.pos = vec(x, y) * TILESIZE
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.rect.center = self.pos
         self.rot = 0
-        # added
         self.speed = 300
-        # self.health = MOB_HEALTH
+
+    def create_triangular_image(self):
+        image = pg.Surface((TILESIZE, TILESIZE), pg.SRCALPHA)
+        pg.draw.polygon(image, ORANGE, [(TILESIZE // 2, 0), (0, TILESIZE), (TILESIZE, TILESIZE)])
+        return image
 
     def update(self):
         self.rot = (self.game.player.rect.center - self.pos).angle_to(vec(1, 0))
@@ -224,7 +253,30 @@ class Mob(pg.sprite.Sprite):
         # self.rect.center = self.hit_rect.center
         # if self.health <= 0:
         #     self.kill()
-
+    # creating bush collide method
+    def collide_with_bush(self, dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.bush, False)
+            if hits:
+                if self.vx > 0:
+                    self.x = hits[0].rect.left - self.rect.width
+                if self.vx < 0:
+                    self.x = hits[0].rect.right
+                self.vx = 0
+                self.rect.x = self.x
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.bush, False)
+            if hits:
+                if self.vy > 0:
+                    self.y = hits[0].rect.top - self.rect.height
+                if self.vy < 0:
+                    self.y = hits[0].rect.bottom
+                self.vy = 0
+                self.rect.y = self.y
+    def spawning(self, x, y):
+        pass
+        # NEED TO WORK HERE
+        
 
 class Mob2(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -255,13 +307,29 @@ class Mob2(pg.sprite.Sprite):
         self.acc += self.vel * -1
         self.vel += self.acc * self.game.dt
         self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
-        # self.hit_rect.centerx = self.pos.x
-        collide_with_walls(self, self.game.walls, 'x')
-        # self.hit_rect.centery = self.pos.y
-        collide_with_walls(self, self.game.walls, 'y')
         # self.rect.center = self.hit_rect.center
         # if self.health <= 0:
         #     self.kill()
+    # creating bush collide method
+    def collide_with_bush(self, dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.bush, False)
+            if hits:
+                if self.vx > 0:
+                    self.x = hits[0].rect.left - self.rect.width
+                if self.vx < 0:
+                    self.x = hits[0].rect.right
+                self.vx = 0
+                self.rect.x = self.x
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.bush, False)
+            if hits:
+                if self.vy > 0:
+                    self.y = hits[0].rect.top - self.rect.height
+                if self.vy < 0:
+                    self.y = hits[0].rect.bottom
+                self.vy = 0
+                self.rect.y = self.y
 
 class Health(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -275,3 +343,23 @@ class Health(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
+
+class Bush(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.mobs
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        # self.image = game.mob_img
+        self.image = pg.Surface((3 *TILESIZE, 3 * TILESIZE))
+        self.image.fill(ORANGE)
+        self.rect = self.image.get_rect()
+        # self.hit_rect = MOB_HIT_RECT.copy()
+        # self.hit_rect.center = self.rect.center
+        self.pos = vec(x, y) * TILESIZE
+        self.vel = vec(0, 0)
+        self.acc = vec(0, 0)
+        self.rect.center = self.pos
+        self.rot = 0
+        # added
+        self.speed = 0
+        # self.health = MOB_HEALTH

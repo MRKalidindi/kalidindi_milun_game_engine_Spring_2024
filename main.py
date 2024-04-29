@@ -16,6 +16,13 @@ allow for pausing
 levels (different school with different maps)
 map that moves with character
 
+Beta Goals:
+add weapons to defeat enemies
+create a map that moves with the character
+add animated sprites???
+enemies get fster over time
+
+Appreciation to Chris Cozort, Chris Bradfield, and Alex Manens '24, Tanay Doppalapudi, Hayden Boone
 
 '''
 
@@ -26,6 +33,7 @@ from random import randint
 from sprites import *
 import sys 
 from os import path
+from utils import * 
 
 
 #pg.init()
@@ -101,8 +109,9 @@ class Game:
         self.mobs = pg.sprite.Group()
         self.mobs2 = pg.sprite.Group()
         self.health = pg.sprite.Group()
-        for i in range (0,1):
-            Coin(self, randint(0,30), randint(0,22)) 
+        self.bush = pg.sprite.Group()
+        # for i in range (0,1):
+        #     Coin(self, randint(0,30), randint(0,22)) 
 
         #self.player = Player(self, 10, 10)
         #self.all_sprites.add(self.player)
@@ -120,14 +129,16 @@ class Game:
                     self.player = Player(self, col, row)
                 if tile == 'o':
                     Potions(self, col, row)
-                # if tile == 'C':
-                #     Coin(self, col, row) 
+                if tile == 'C':
+                    Coin(self, col, row) 
                 if tile == 'M':
                     Mob(self, col, row)
                 if tile == 'f':
                     Mob2(self, col, row)
                 if tile == 'h':
                     Health(self, col, row)
+                if tile == 'b':
+                    Bush(self, col, row)
     # call the function
         self.run()
 #run method - responsible for running
@@ -186,7 +197,7 @@ class Game:
                 self.quit()
                 print("The game has ended")
             if event.type == pg.KEYUP:
-                if event.key == pg.K_p:
+                if event.key == pg.K_p:   
                     if not self.paused:
                         self.paused = True
                     else:

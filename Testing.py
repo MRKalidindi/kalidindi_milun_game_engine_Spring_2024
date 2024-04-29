@@ -1,20 +1,33 @@
-import pygame
-from random import randint
-WIDTH = 400
-HEIGHT = 400
-score = 0
+import pygame as pg
 
-game_over = False
+clock = pg.time.Clock()
+FPS = 30
 
-fox = Actor("fox")
-fox.pos = 100,100
+frames = ["frame1", "frame2", "frame3", "frame4"]
 
-coin = Actor("coin")
-coin.pos = 200,200
 
-def draw():
-    screen.fill('green')
+# while True:
+#     x = x%len(frames)
+#     print(frames[x])
+#     x+=1
 
 
 
-pgzrun.go()
+
+# print(frames[x])
+# firstFrame = x%len(frames)
+# print(frames[firstFrame])
+x = 0
+then = 0
+current_frame = 0
+
+while True:
+    clock.tick(FPS)
+    now = pg.time.get_ticks()
+    if now - then > 10:
+        print([current_frame])
+        current_frame = (current_frame + 1) % 4
+        # print(now)
+        # then = now
+    # print(pg.time.get_ticks())
+    
