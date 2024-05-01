@@ -2,7 +2,7 @@ import pygame as pg
 from math import floor
 from os import path
 from sprites import *
-from main import *
+
 
 def test_func():
     print("Test func ran...")

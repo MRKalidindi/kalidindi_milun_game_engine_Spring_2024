@@ -7,8 +7,8 @@ from utils import *
 from os import path
 
 vec =pg.math.Vector2
-game_folder = path.dirname(__file__)
-img_folder = path.join(game_folder, 'images')
+# game_folder = path.dirname(__file__)
+# img_folder = path.join(game_folder, 'images')
 
 def collide_with_walls(sprite, group, dir):
     if dir == 'x':
@@ -40,9 +40,10 @@ class Player(pg.sprite.Sprite):
         # self.groups = game.all_sprites
         # self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image = game.player_img
-        self.spritesheet = Spritesheet(path.join(img_folder, 'Animated Sprite Sheet.png'))
+        # self.spritesheet = Spritesheet(path.join(img_folder, 'Autobot Symbol.png'))
+        # self.load_images()
         # self.image.fill(GREEN)
-        self.image = self.standing_frames[0]
+        # self.image = self.standing_frames[0]
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x = x * TILESIZE 
@@ -116,23 +117,23 @@ class Player(pg.sprite.Sprite):
 
                 # if self.status == "Invincible":
                 #     print("you can't hurt me")
-    def load_images(self):
-        self.running_frames = [self.spritesheet.get_image(0,32, 32, 64), 
-                                self.spritesheet.get_image(32,32, 64, 64),
-                                self.spritesheet.get_image(64,32, 96,64),
-                                self.spritesheet.get_image(32,32, 64, 64)]
-        self.standing_frames = [self.spritesheet.get_image(0,0,32,0)]
+    # def load_images(self):
+    #     self.running_frames = [self.spritesheet.get_image(0,32, 32, 64), 
+    #                             self.spritesheet.get_image(32,32, 64, 64),
+    #                             self.spritesheet.get_image(64,32, 96,64),
+    #                             self.spritesheet.get_image(32,32, 64, 64)]
+    #     self.standing_frames = [self.spritesheet.get_image(0,0,32,0)]
 
 
-    def animate(self):
-        now = pg.time.get_ticks()
-        if now - self.last_update > 350:
-            self.last_update = now
-            self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
-            bottom = self.rect.bottom
-            self.image = self.standing_frames[self.current_frame]
-            self.rect = self.image.get_rect()
-            self.rect.bottom = bottom
+    # def animate(self):
+    #     now = pg.time.get_ticks()
+    #     if now - self.last_update > 350:
+    #         self.last_update = now
+    #         self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
+    #         bottom = self.rect.bottom
+    #         self.image = self.standing_frames[self.current_frame]
+    #         self.rect = self.image.get_rect()
+    #         self.rect.bottom = bottom
 
             
 
@@ -148,7 +149,7 @@ class Player(pg.sprite.Sprite):
     def update(self):
         #self.rect.x = self.x
         #self.rect.y = self.y
-        self.animate()
+        # self.animate()
         self.get_keys()
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
