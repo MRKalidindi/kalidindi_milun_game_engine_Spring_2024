@@ -79,6 +79,9 @@ class Game:
         self.load_data()
         self.running = True
         self.paused = False
+        self.mob_spawn_timer = 0
+        self.mob_spawn_interval = 5000  # Spawn interval in milliseconds
+
     def load_data(self): 
         # says location is the game folder
         game_folder = path.dirname(__file__)
@@ -166,6 +169,9 @@ class Game:
             self.all_sprites.update()
             if self.player.hitpoints < 1:
                 self.playing = False
+            if pg.time.get_ticks() - self.mob_spawn_timer > self.mob_spawn_interval:
+                Mob(self, randint(0, 30), randint(0, 22))  # Spawn a new mob
+                self.mob_spawn_timer = pg.time.get_ticks()
             # if self.player.moneybag > 2:
                 # self.change_level(LEVEL2)
     # draws the grid on the screen
