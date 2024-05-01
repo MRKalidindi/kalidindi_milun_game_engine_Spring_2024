@@ -96,8 +96,8 @@ class Player(pg.sprite.Sprite):
     def collide_with_group(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits:
-            if str(hits[0].__class__.__name__) == "Coin":
-                Coin(self.game, randint(0,30), randint(0,22))
+            if str(hits[0].__class__.__name__) == "Cheese":
+                Cheese(self.game, randint(0,30), randint(0,22))
                 self.moneybag += 1
             if str(hits[0].__class__.__name__) == "Potions":
                 print(hits[0].__class__.__name__)
@@ -159,7 +159,7 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('y')
         # self.rect.x = self.x * TILESIZE
         # self.rect.y = self.y * TILESIZE
-        self.collide_with_group(self.game.coins, True)
+        self.collide_with_group(self.game.cheese, True)
         # if self.game.cooldown.cd < 1:
         #     self.cooling = False
         # if not self.cooling:
@@ -203,9 +203,9 @@ class Potions(pg.sprite.Sprite):
         self.rect.y = y * TILESIZE
 
 # coin class
-class Coin(pg.sprite.Sprite):
+class Cheese(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.coins
+        self.groups = game.all_sprites, game.cheese
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
@@ -232,7 +232,7 @@ class Mob(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.rot = 0
         self.speed = 300
-
+# creating triangular mobs with triangular hit boxes
     def create_triangular_image(self):
         image = pg.Surface((TILESIZE, TILESIZE), pg.SRCALPHA)
         pg.draw.polygon(image, ORANGE, [(TILESIZE // 2, 0), (0, TILESIZE), (TILESIZE, TILESIZE)])

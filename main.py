@@ -104,14 +104,14 @@ class Game:
         # print("create new game...")
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
-        self.coins = pg.sprite.Group()
+        self.cheese = pg.sprite.Group()
         self.potions = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.mobs2 = pg.sprite.Group()
         self.health = pg.sprite.Group()
         self.bush = pg.sprite.Group()
         for i in range (0,1):
-            Coin(self, randint(0,30), randint(0,22)) 
+            Cheese(self, randint(0,30), randint(0,22)) 
 
         #self.player = Player(self, 10, 10)
         #self.all_sprites.add(self.player)
