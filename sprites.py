@@ -221,7 +221,7 @@ class Cheese(pg.sprite.Sprite):
 
 # triangular mob class
 class Mob(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, speed):
         super().__init__(game.all_sprites, game.mobs)
         self.game = game
         self.image = self.create_triangular_image()
@@ -231,7 +231,7 @@ class Mob(pg.sprite.Sprite):
         self.acc = vec(0, 0)
         self.rect.center = self.pos
         self.rot = 0
-        self.speed = 300
+        self.speed = speed
 # creating triangular mobs with triangular hit boxes
     def create_triangular_image(self):
         image = pg.Surface((TILESIZE, TILESIZE), pg.SRCALPHA)

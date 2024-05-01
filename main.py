@@ -81,6 +81,8 @@ class Game:
         self.paused = False
         self.mob_spawn_timer = 0
         self.mob_spawn_interval = 5000  # Spawn interval in milliseconds
+        self.wave = 1
+
 
     def load_data(self): 
         # says location is the game folder
@@ -135,7 +137,7 @@ class Game:
                 # if tile == 'C':
                 #     Coin(self, col, row) 
                 if tile == 'M':
-                    Mob(self, col, row)
+                    Mob(self, col, row, MOB_BASE_SPEED)
                 if tile == 'f':
                     Mob2(self, col, row)
                 if tile == 'h':
@@ -170,7 +172,10 @@ class Game:
             if self.player.hitpoints < 1:
                 self.playing = False
             if pg.time.get_ticks() - self.mob_spawn_timer > self.mob_spawn_interval:
-                Mob(self, randint(0, 30), randint(0, 22))  # Spawn a new mob
+                # new speed of the mob
+                #spawn the new mob in
+                self.wave+=1
+                Mob(self, randint(0, 30), randint(0, 22), MOB_BASE_SPEED*self.wave) # Spawn a new mob
                 self.mob_spawn_timer = pg.time.get_ticks()
             # if self.player.moneybag > 2:
                 # self.change_level(LEVEL2)
