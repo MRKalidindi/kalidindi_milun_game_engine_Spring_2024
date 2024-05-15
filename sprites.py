@@ -5,6 +5,8 @@ from settings import *
 from random import randint
 from utils import *
 from os import path
+from pygame.math import Vector2 as vec
+
 
 vec =pg.math.Vector2
 # game_folder = path.dirname(__file__)
@@ -57,6 +59,9 @@ class Player(pg.sprite.Sprite):
         self.current_frame = 0
         self.last_update = 0
         self.material = True
+        self.cooldown = 10000  # Cooldown time in milliseconds
+        self.last_invincible_time = 0
+    
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
@@ -114,6 +119,10 @@ class Player(pg.sprite.Sprite):
             if str(hits[0].__class__.__name__) == "Bush":
                 print(hits[0].__class__.__name__)
                 print("collided with bush")
+            if str(hits[0].__class__.__name__) == "Invincibility":
+                print(hits[0].__class__.__name__)
+                print("collided with Invincibility")
+                
 
                 # if self.status == "Invincible":
                 #     print("you can't hurt me")
@@ -134,9 +143,6 @@ class Player(pg.sprite.Sprite):
     #         self.image = self.standing_frames[self.current_frame]
     #         self.rect = self.image.get_rect()
     #         self.rect.bottom = bottom
-
-            
-
 
 # old motion
     # def move(self, dx=0, dy=0):
@@ -163,6 +169,7 @@ class Player(pg.sprite.Sprite):
         # if self.game.cooldown.cd < 1:
         #     self.cooling = False
         # if not self.cooling:
+        self.collide_with_group(self.game.invincibility,True)
         self.collide_with_group(self.game.potions, True)
         self.collide_with_group(self.game.mobs, False)
         self.collide_with_group(self.game.health, True)
@@ -239,9 +246,13 @@ class Mob(pg.sprite.Sprite):
         return image
 
     def update(self):
-        self.rot = (self.game.player.rect.center - self.pos).angle_to(vec(1, 0))
+        direction_to_player = self.game.player.rect.center - self.pos
+        self.rot = direction_to_player.angle_to(vec(1,0))
+        # (self.game.player.rect.center - self.pos).angle_to(vec(1, 0))
         # self.image = pg.transform.rotate(self.image, self.rot)
         # self.rect = self.image.get_rect()
+
+        # update current position and movement
         self.rect.center = self.pos
         self.acc = vec(self.speed, 0).rotate(-self.rot)
         self.acc += self.vel * -1
@@ -254,6 +265,7 @@ class Mob(pg.sprite.Sprite):
         # self.rect.center = self.hit_rect.center
         # if self.health <= 0:
         #     self.kill()
+
     # creating bush collide method
     def collide_with_bush(self, dir):
         if dir == 'x':
@@ -274,76 +286,73 @@ class Mob(pg.sprite.Sprite):
                     self.y = hits[0].rect.bottom
                 self.vy = 0
                 self.rect.y = self.y
-    def spawning(self, x, y):
-        pass
-        # NEED TO WORK HERE
         
 
-class Mob2(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.mobs
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        # self.image = game.mob_img
-        self.image = pg.Surface((2 * TILESIZE, 2 * TILESIZE))
-        self.image.fill(RED)
-        self.rect = self.image.get_rect()
-        # self.hit_rect = MOB_HIT_RECT.copy()
-        # self.hit_rect.center = self.rect.center
-        self.pos = vec(x, y) * TILESIZE
-        self.vel = vec(0, 0)
-        self.acc = vec(0, 0)
-        self.rect.center = self.pos
-        self.rot = 0
-        # added
-        self.speed = 150
-        # self.health = MOB_HEALTH
+# class Mob2(pg.sprite.Sprite):
+#     def __init__(self, game, x, y):
+#         self.groups = game.all_sprites, game.mobs
+#         pg.sprite.Sprite.__init__(self, self.groups)
+#         self.game = game
+#         # self.image = game.mob_img
+#         self.image = pg.Surface((2 * TILESIZE, 2 * TILESIZE))
+#         self.image.fill(RED)
+#         self.rect = self.image.get_rect()
+#         # self.hit_rect = MOB_HIT_RECT.copy()
+#         # self.hit_rect.center = self.rect.center
+#         self.pos = vec(x, y) * TILESIZE
+#         self.vel = vec(0, 0)
+#         self.acc = vec(0, 0)
+#         self.rect.center = self.pos
+#         self.rot = 0
+#         # added
+#         self.speed = 150
+#         # self.health = MOB_HEALTH
 
-    def update(self):
-        self.rot = (self.game.player.rect.center - self.pos).angle_to(vec(1, 0))
-        # self.image = pg.transform.rotate(self.image, self.rot)
-        # self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        self.acc = vec(self.speed, 0).rotate(-self.rot)
-        self.acc += self.vel * -1
-        self.vel += self.acc * self.game.dt
-        self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
-        # self.rect.center = self.hit_rect.center
-        # if self.health <= 0:
-        #     self.kill()
-    # creating bush collide method
-    def collide_with_bush(self, dir):
-        if dir == 'x':
-            hits = pg.sprite.spritecollide(self, self.game.bush, False)
-            if hits:
-                if self.vx > 0:
-                    self.x = hits[0].rect.left - self.rect.width
-                if self.vx < 0:
-                    self.x = hits[0].rect.right
-                self.vx = 0
-                self.rect.x = self.x
-        if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.bush, False)
-            if hits:
-                if self.vy > 0:
-                    self.y = hits[0].rect.top - self.rect.height
-                if self.vy < 0:
-                    self.y = hits[0].rect.bottom
-                self.vy = 0
-                self.rect.y = self.y
+#     def update(self):
+#         self.rot = (self.game.player.rect.center - self.pos).angle_to(vec(1, 0))
+#         # self.image = pg.transform.rotate(self.image, self.rot)
+#         # self.rect = self.image.get_rect()
+#         self.rect.center = self.pos
+#         self.acc = vec(self.speed, 0).rotate(-self.rot)
+#         self.acc += self.vel * -1
+#         self.vel += self.acc * self.game.dt
+#         self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
+#         # self.rect.center = self.hit_rect.center
+#         # if self.health <= 0:
+#         #     self.kill()
+#     # creating bush collide method
+#     def collide_with_bush(self, dir):
+#         if dir == 'x':
+#             hits = pg.sprite.spritecollide(self, self.game.bush, False)
+#             if hits:
+#                 if self.vx > 0:
+#                     self.x = hits[0].rect.left - self.rect.width
+#                 if self.vx < 0:
+#                     self.x = hits[0].rect.right
+#                 self.vx = 0
+#                 self.rect.x = self.x
+#         if dir == 'y':
+#             hits = pg.sprite.spritecollide(self, self.game.bush, False)
+#             if hits:
+#                 if self.vy > 0:
+#                     self.y = hits[0].rect.top - self.rect.height
+#                 if self.vy < 0:
+#                     self.y = hits[0].rect.bottom
+#                 self.vy = 0
+#                 self.rect.y = self.y
 
-class Health(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.health
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(GREEN)
-        self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
-        self.rect.x = x * TILESIZE
-        self.rect.y = y * TILESIZE
+# class Health(pg.sprite.Sprite):
+#     def __init__(self, game, x, y):
+#         self.groups = game.all_sprites, game.health
+#         pg.sprite.Sprite.__init__(self, self.groups)
+#         self.game = game
+#         self.image = pg.Surface((TILESIZE, TILESIZE))
+#         self.image.fill(GREEN)
+#         self.rect = self.image.get_rect()
+#         self.x = x
+#         self.y = y
+#         self.rect.x = x * TILESIZE
+#         self.rect.y = y * TILESIZE
 
 class Bush(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -352,7 +361,7 @@ class Bush(pg.sprite.Sprite):
         self.game = game
         # self.image = game.mob_img
         self.image = pg.Surface((3 *TILESIZE, 3 * TILESIZE))
-        self.image.fill(ORANGE)
+        self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         # self.hit_rect = MOB_HIT_RECT.copy()
         # self.hit_rect.center = self.rect.center
@@ -364,3 +373,16 @@ class Bush(pg.sprite.Sprite):
         # added
         self.speed = 0
         # self.health = MOB_HEALTH
+
+# invincibility block that allows player to kill mobs
+class Invincibility(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.invincibility
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.radius = TILESIZE // 2  # Radius of the circle
+        self.image = pg.Surface((self.radius * 2, self.radius * 2), pg.SRCALPHA)  # Create a surface with per-pixel alpha
+        pg.draw.circle(self.image, (0, 0, 255), (self.radius, self.radius), self.radius)  # Draw a circle on the surface
+        self.rect = self.image.get_rect(center=(x * TILESIZE + self.radius, y * TILESIZE + self.radius))  # Center the circle
+        self.x = x
+        self.y = y

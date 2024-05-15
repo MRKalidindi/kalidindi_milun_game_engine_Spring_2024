@@ -23,6 +23,7 @@ add animated sprites???
 enemies get fster over time
 
 Appreciation to Chris Cozort, Chris Bradfield, and Alex Manens '24, Tanay Doppalapudi, Hayden Boone
+code modified from Chat GPT for certain features
 
 '''
 
@@ -34,6 +35,7 @@ from sprites import *
 import sys 
 from os import path
 from utils import * 
+from math import floor
 
 
 #pg.init()
@@ -107,6 +109,7 @@ class Game:
         # create timer
         # self.test_timer = Cooldown()
         # print("create new game...")
+        self.test_timer = Cooldown()
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.cheese = pg.sprite.Group()
@@ -115,8 +118,11 @@ class Game:
         self.mobs2 = pg.sprite.Group()
         self.health = pg.sprite.Group()
         self.bush = pg.sprite.Group()
+        self.invincibility = pg.sprite.Group()
         for i in range (0,1):
             Cheese(self, randint(0,30), randint(0,22)) 
+        for i in range(0,1):  # Example: Spawn 5 blocks
+            Invincibility(self, randint(0, 30), randint(0, 22))  # Adjust coordinates as needed
 
         #self.player = Player(self, 10, 10)
         #self.all_sprites.add(self.player)
@@ -138,10 +144,10 @@ class Game:
                 #     Coin(self, col, row) 
                 if tile == 'M':
                     Mob(self, col, row, MOB_BASE_SPEED)
-                if tile == 'f':
-                    Mob2(self, col, row)
-                if tile == 'h':
-                    Health(self, col, row)
+                # if tile == 'f':
+                #     Mob2(self, col, row)
+                # if tile == 'h':
+                #     Health(self, col, row)
                 if tile == 'b':
                     Bush(self, col, row)
     # call the function
@@ -167,7 +173,7 @@ class Game:
          pass
     def update(self):
         if not self.paused:
-            # wws
+            self.test_timer.ticking()
             self.all_sprites.update()
             if self.player.hitpoints < 1:
                 self.playing = False
@@ -180,6 +186,7 @@ class Game:
             # if self.player.moneybag > 2:
                 # self.change_level(LEVEL2)
     # draws the grid on the screen
+
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (x, 0), (x, HEIGHT))
