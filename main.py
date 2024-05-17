@@ -121,7 +121,7 @@ class Game:
         self.invincibility = pg.sprite.Group()
         for i in range (0,1):
             Cheese(self, randint(0,30), randint(0,22)) 
-        for i in range(0,1):  # Example: Spawn 5 blocks
+        for i in range(0,1):
             Invincibility(self, randint(0, 30), randint(0, 22))  # Adjust coordinates as needed
 
         #self.player = Player(self, 10, 10)

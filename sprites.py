@@ -61,6 +61,7 @@ class Player(pg.sprite.Sprite):
         self.material = True
         self.cooldown = 10000  # Cooldown time in milliseconds
         self.last_invincible_time = 0
+        self.status = ""
     
 
     def get_keys(self):
@@ -98,31 +99,62 @@ class Player(pg.sprite.Sprite):
                 self.vy = 0
                 self.rect.y = self.y
     
+    # def collide_with_group(self, group, kill):
+    #     hits = pg.sprite.spritecollide(self, group, kill)
+    #     if hits:
+    #         if str(hits[0].__class__.__name__) == "Cheese":
+    #             Cheese(self.game, randint(0,30), randint(0,22))
+    #             self.moneybag += 1
+    #         if str(hits[0].__class__.__name__) == "Potions":
+    #             print(hits[0].__class__.__name__)
+    #             self.speed += 100
+    #         if str(hits[0].__class__.__name__) == "Mob" or str(hits[0].__class__.__name__) == "Mob2":
+    #             print(hits[0].__class__.__name__)
+    #             self.game.new()
+    #             print("Collided with mob")
+    #             self.hitpoints -= 1
+    #         if str(hits[0].__class__.__name__) == "Health":
+    #             print(hits[0].__class__.__name__)
+    #             print("Collided with Health Potion")
+    #             self.hitpoints += 1
+    #         if str(hits[0].__class__.__name__) == "Bush":
+    #             print(hits[0].__class__.__name__)
+    #             print("collided with bush")
+    #         if str(hits[0].__class__.__name__) == "Invincibility":
+    #             print(hits[0].__class__.__name__)
+    #             print("collided with Invincibility")
+
     def collide_with_group(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits:
-            if str(hits[0].__class__.__name__) == "Cheese":
-                Cheese(self.game, randint(0,30), randint(0,22))
-                self.moneybag += 1
-            if str(hits[0].__class__.__name__) == "Potions":
-                print(hits[0].__class__.__name__)
-                self.speed += 100
-            if str(hits[0].__class__.__name__) == "Mob" or str(hits[0].__class__.__name__) == "Mob2":
-                print(hits[0].__class__.__name__)
-                self.game.new()
-                print("Collided with mob")
-                self.hitpoints -= 1
-            if str(hits[0].__class__.__name__) == "Health":
-                print(hits[0].__class__.__name__)
-                print("Collided with Health Potion")
-                self.hitpoints += 1
-            if str(hits[0].__class__.__name__) == "Bush":
-                print(hits[0].__class__.__name__)
-                print("collided with bush")
-            if str(hits[0].__class__.__name__) == "Invincibility":
-                print(hits[0].__class__.__name__)
-                print("collided with Invincibility")
-                
+            for hit in hits:
+                if str(hit.__class__.__name__) == "Invincibility":
+                    # Set the player status to "Invincible"
+                    self.status = "Invincible"
+                    Invincibility(self.game, randint(0,30), randint(0,22))
+                    # Store the current time when the player becomes invincible
+                    self.last_invincible_time = pg.time.get_ticks()
+                    hit.kill()  # Remove the invincibility block from the group
+                if str(hit.__class__.__name__) in ["Mob"]:
+                    # Check if the player is invincible
+                    if self.status != "Invincible":
+                        # Restart the game if the player collides with mobs and is not invincible
+                        self.game.new()
+                        print("Collided with mob")
+                        self.hitpoints -= 1
+                        hit.kill()
+                    else:
+                        print("Player is invincible, mob collision ignored")
+    
+                if isinstance(hit, Cheese):  # Check if the collided object is a Cheese
+                    Cheese(self.game, randint(0, 30), randint(0, 22))
+                    self.moneybag += 1
+                elif isinstance(hit, Potions):  # Check if the collided object is a Potion
+                    print("Collided with potion")
+                    self.speed += 200
+                elif isinstance(hit, Bush):  # Check if the collided object is a Bush
+                    print("Collided with bush")
+              
 
                 # if self.status == "Invincible":
                 #     print("you can't hurt me")
@@ -174,9 +206,13 @@ class Player(pg.sprite.Sprite):
         self.collide_with_group(self.game.mobs, False)
         self.collide_with_group(self.game.health, True)
         
-        # coin_hits = pg.sprite.spritecollide(self.game.coins, True)
-        # if coin_hits:
-        #     print("I got a coin")
+  # Check if the invincibility effect has expired
+        if self.status == "Invincible":
+            print("i am invincible")
+            # Check if 3 seconds have passed since the player became invincible
+            if pg.time.get_ticks() - self.last_invincible_time >= 4000:
+                # Reset player status to normal after the invincibility period expires
+                self.status = ""
 
 
 class Wall(pg.sprite.Sprite):
