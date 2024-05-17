@@ -151,7 +151,7 @@ class Player(pg.sprite.Sprite):
                     self.moneybag += 1
                 elif isinstance(hit, Potions):  # Check if the collided object is a Potion
                     print("Collided with potion")
-                    self.speed += 200
+                    self.speed += 150
                 elif isinstance(hit, Bush):  # Check if the collided object is a Bush
                     print("Collided with bush")
               
